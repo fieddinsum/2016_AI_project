@@ -38,8 +38,20 @@ disData = [ [ 0 for x in range(widthV)] for y in range(hightV)]
 
 #clusterdistance
 
-clusterMeter = 20
-starNodePick = 15
+#handling factor
+startPoint = 1
+FragmentUnit = 20
+FragmentNode = 4
+
+bridgeNode = 4
+PSEUDO_MAX = 99999
+clusterMeter = 40
+
+
+#automatly generated factor
+leftover = 100 - (bridgeNode+FragmentUnit*FragmentNode+startPoint)
+
+
 nearDisCount = [0 for x in range(cityCount)]
 
 
@@ -50,7 +62,12 @@ for i in range(0,cityCount):
         for j in range(0,i+1):
                 disData[i] = rawLine
 
-print(disData)
+#copy transparent value
+for j in range(0,cityCount):
+        for k in range(j+1,cityCount):
+                disData[j].append(disData[k][j])  
+                
+
 
                 
 #O(n^2) : StarNodeCount
@@ -61,10 +78,16 @@ for colCount in range(0,cityCount):
 
 
 #getCertain Number
+
+
                         
 bridgeIndex = []
 fragmentIndex =[]
+
+#To save final result
 pathIndex=[]
+
+
 
 for t in range(0,cityCount):
         fragmentIndex.append(t)
@@ -73,7 +96,7 @@ for t in range(0,cityCount):
 
 copyNDC = nearDisCount[:]
 
-for OutstarIter in range(0,starNodePick):
+for OutstarIter in range(0,bridgeNode):
         tempvalue =0
         tmepindex =0
         for InstarIter in range(0,cityCount):
@@ -85,45 +108,73 @@ for OutstarIter in range(0,starNodePick):
         fragmentIndex.remove(tempindex)
         copyNDC[tempindex] = 0
 
-
 # 15 bridge 노드 16 x 5개  마디
 
-#handling factor
-FragmentUnit = 5
-bridgeNode = 15
-FragmentNode = 16
 
 
-#automatly generated factor
-FragmentCount = 
-leftover = 100 - (bridgeNode+FragmentUnit*FragmentNode)
 
-
-#select start point
-startPoint = random.choice(fragmentIndex)
-
-#add to the Path
-pathIndex.append(startPoint)
-#remove from fragment
-fragmentIndex.remove(startPoint)
 
 #make 5 node fragment
 preTSP = 0;
 postTSP =0;
-for outloop in range(0,FragmentUnit):
+
+#15회
+        #first choice
+currentPoint = random.choice(fragmentIndex)
+pathIndex.append(currentPoint)
+fragmentIndex.remove(currentPoint)
+
+
+#fragmentation start
+for outLoop in range(0,FragmentNode):
+
+
+        #makeFragment
+        for innerloop in range(0,FragmentUnit):
+                candIndex_F = -1;
+                candValue_F = PSEUDO_MAX
+                for fragIter in fragmentIndex:
+                        if int(candValue_F) > int(disData[currentPoint][fragIter]):
+                                candValue_F = disData[currentPoint][fragIter]
+                                candIndex_F = fragIter
+                                
+                pathIndex.append(candIndex_F)
+                fragmentIndex.remove(candIndex_F)
+                currentPoint = candIndex_F
         
+        #choose bridge Node
+        candIndex_B = -1;
+        candValue_B = PSEUDO_MAX
+
+        for bridIter in bridgeIndex :
+                if int(candValue_B) > int(disData[currentPoint][bridIter]):
+                        candValue_B = disData[currentPoint][bridIter]
+                        candIndex_B = bridIter
+
+        pathIndex.append(candIndex_B)
+        bridgeIndex.remove(candIndex_B)
+        currentPoint = candIndex_B
+
+
+#fragmentation end               
+             
 #iterate remain city & find Minimum distance
-for innerLoop in range(0,cityCount):
-        
-#make Fragment
 
+for leftHandle in range(0,leftover):
 
-#selection bridge
+        leftIndex = -1;
+        leftValue = PSEUDO_MAX
 
-#selection bridge
+        for leftIter in fragmentIndex :
+                if int(leftValue) > int(disData[currentPoint][leftIter]):
+                        leftValue = disData[currentPoint][leftIter]
+                        leftIndex = leftIter
+        pathIndex.append(leftIndex)
+        fragmentIndex.remove(leftIndex)
+        currentPoint = leftIndex
 
-#TSP
-
-
-
-
+pathDis = 0 
+for pathIter in range(0,cityCount-1):
+       pathDis += int(disData[pathIndex[pathIter]][pathIndex[pathIter+1]])
+print(pathIndex)
+print(pathDis)
