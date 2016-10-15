@@ -85,6 +85,7 @@
     <ClCompile Include="TreeTraverse.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BranchBound.h" />
     <ClInclude Include="OuterComponent.h" />
     <ClInclude Include="TreeTraverse.h" />
   </ItemGroup>

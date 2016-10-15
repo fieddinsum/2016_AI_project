@@ -1,14 +1,23 @@
+#ifndef TT_H
+#define TT_H
+
 #include<iostream>
-#include<queue>
+#include<stack>
 #include<vector>
+
 
 using namespace std;
 
-class BoundNode{
+typedef class BoundNode{
 public:
-
 	BoundNode();
-	BoundNode(BoundNode*, int);
+	~BoundNode();
+	BoundNode(int nodeIndex);
+
+	//it's for copy Best node
+	BoundNode(BoundNode*);
+	//it's for inheritance
+	BoundNode(int** , BoundNode*, int,int);
 
 	int nodeIndex;
 	int nodeLevel;
@@ -16,7 +25,7 @@ public:
 	int promValue;
 
 	vector<int>* treeStack;
-	//  sociable & lonely
+	// 'A~D'
 	char nodeKind;
 
 	
@@ -25,10 +34,13 @@ public:
 	char getNodeKind();
 };
 
-class BranchTree{
+typedef class BranchTree{
 public:
 	BranchTree();
-	vector<BoundNode>* treeTraverse;
-	
+	stack<BoundNode>* treeTraverse;
+	int startSetting(BoundNode* startNode, int citySize, int meanDis);
 };
 
+
+
+#endif
