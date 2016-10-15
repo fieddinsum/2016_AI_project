@@ -28,7 +28,7 @@ int main(){
 	configure->cityCount = configure->readCityDistance(cityDistArray);	
 	
 	//complement data (for searching )
-	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount());
+	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount())-50;
 	configure->transCityData(cityDistArray, configure->cityCount);
 
 	//evaluate
@@ -46,12 +46,16 @@ int main(){
 	// while tree was empty
 	int genIter;
 	int currentGotPath = 0;
-	BoundNode bestTrip;
+	BoundNode* bestTrip = new BoundNode();
 	//std::vector<int>::iterator vecIt;
 	int initIter;
+	int tempIter;
 	int isregist = 0;
 	//nodeSearch
 	BoundNode* searchNode;
+	//insert Node to Tree 
+	BoundNode* tempNode;
+	stack<BoundNode>* tempStack = new stack<BoundNode>();
 	
 	while (!treeStructure->treeTraverse->empty()){
 
@@ -61,8 +65,9 @@ int main(){
 		if (searchNode->nodeLevel == (configure->cityCount)-1){
 			//it's bigger than I have
 			if (searchNode->curDis >= currentGotPath){
-				bestTrip = (*searchNode);
-				printf("Best Trip is changing : %d", bestTrip.curDis);
+				bestTrip = new BoundNode(searchNode);
+				currentGotPath = bestTrip->curDis;
+				printf("Best Trip is changing : %d\n", bestTrip->curDis);
 			}
 			treeStructure->treeTraverse->pop();
 			delete searchNode;
@@ -72,7 +77,7 @@ int main(){
 		// if is middle of tree
 		else  {
 			//if is not promising
-			if (searchNode->promValue <= bestTrip.curDis){
+			if (searchNode->promValue <= bestTrip->curDis){
 				treeStructure->treeTraverse->pop();
 				delete searchNode;
 			}
@@ -80,14 +85,11 @@ int main(){
 
 			//if is promising
 			else{
-				// stack pop()
-				treeStructure->treeTraverse->pop();
-
 				// insert node that dosn't include present path 
 				for (genIter = 0; genIter < configure->cityCount; genIter++){
 		
 					isregist = 0;
-					for (initIter = 0; initIter < treeStructure->treeTraverse->size(); initIter++){
+					for (initIter = 0; initIter < searchNode->treeStack->size(); initIter++){
 
 						if (searchNode->treeStack->at(initIter) == genIter){
 							isregist = 1;
@@ -95,17 +97,32 @@ int main(){
 						}
 					}
 					if (!isregist){
-						treeStructure->treeTraverse->push(new BoundNode(cityDistArray, searchNode, genIter, configure->meanValue, configure->cityCount));
+						tempStack->push(new BoundNode(cityDistArray, searchNode, genIter, configure->meanValue, configure->cityCount));
 					}
 
 					}	
-				}		
+				}
+
+				// stack pop()
+			printf("pop Level %d :\n", treeStructure->treeTraverse->top().nodeLevel);
+				treeStructure->treeTraverse->pop();
+				for (tempIter = 0; tempIter < tempStack->size(); tempIter++){
+					tempNode = &tempStack->top();
+					treeStructure->treeTraverse->push(tempNode);
+					tempStack->pop();
+				}
+
 				//dellocation 
 				delete searchNode;
 			}
 		}
+	int i ;
+	for (i = 0; i < bestTrip->treeStack->size(); i++){
+		printf("%d ", bestTrip->treeStack->at(i));
+	}
 	return 0;
 	// after searching print minimum value
+
 	}
 
 

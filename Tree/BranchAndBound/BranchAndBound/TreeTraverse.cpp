@@ -3,7 +3,7 @@
 // -> =
 
 BoundNode::~BoundNode(){
-	delete treeStack;
+	//delete treeStack;
 }
 
 
