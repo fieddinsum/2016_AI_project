@@ -3,7 +3,6 @@
 // -> =
 
 BoundNode::~BoundNode(){
-
 	delete treeStack;
 }
 
@@ -24,15 +23,16 @@ BoundNode::BoundNode(){
 
 BoundNode::BoundNode(int nodeIndex){
 
-	treeStack = new vector<int>();
-	this->nodeIndex= nodeIndex;
-	nodeLevel=-1;
 
 	//A
-	curDis=-1;
+	this->curDis = -1;
+	this->nodeIndex = nodeIndex;
+	this->nodeKind = 'A';
+	this->treeStack = new vector<int>();
+	this->treeStack->push_back(nodeIndex);
+	this->nodeLevel=-1;
 	//C
-	promValue=-1;
-	nodeKind = 'A';
+	this->promValue=-1;
 }
 
 BoundNode::BoundNode(BoundNode* copyNode){
@@ -45,7 +45,7 @@ BoundNode::BoundNode(BoundNode* copyNode){
 }
 
 // -> =
-BoundNode::BoundNode(int** cityDistArray, BoundNode* parent, int nodeIndex, int meanvalue){
+BoundNode::BoundNode(int** cityDistArray, BoundNode* parent, int nodeIndex, int meanvalue,int citySize){
 	
 	treeStack = new vector<int>(*parent->treeStack);
 	treeStack->push_back(this->nodeIndex);
@@ -54,8 +54,8 @@ BoundNode::BoundNode(int** cityDistArray, BoundNode* parent, int nodeIndex, int 
 	this->nodeLevel = parent->nodeLevel + 1;
 
 
-	this->curDis = parent->curDis; // + [p,c] Dis
-	this->promValue = parent->promValue - meanvalue;
+	this->curDis = parent->curDis + cityDistArray[parent->nodeIndex][nodeIndex];
+	this->promValue = this->curDis + (meanvalue)* ((citySize)-(treeStack->size()));
 
 }
 
@@ -71,7 +71,6 @@ int BranchTree::startSetting(BoundNode* startNode,int citySize,int meanDis){
 
 	startNode->nodeLevel = 0;
 	startNode->curDis = 0;
-	startNode->treeStack->push_back(startNode->nodeIndex);
 	startNode->promValue = (meanDis) * ( (citySize) - (startNode->treeStack->size() ));
 	this->treeTraverse->push(*startNode);
 	return 0;

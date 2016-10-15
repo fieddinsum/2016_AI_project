@@ -17,7 +17,7 @@ public:
 	//it's for copy Best node
 	BoundNode(BoundNode*);
 	//it's for inheritance
-	BoundNode(int** , BoundNode*, int,int);
+	BoundNode(int** , BoundNode*, int,int,int);
 
 	int nodeIndex;
 	int nodeLevel;

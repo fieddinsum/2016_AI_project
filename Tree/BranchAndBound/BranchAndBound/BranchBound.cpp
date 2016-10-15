@@ -47,21 +47,22 @@ int main(){
 	int genIter;
 	int currentGotPath = 0;
 	BoundNode bestTrip;
-	std::vector<int>::iterator vecIt;
-	//for making node
-	BoundNode* tempNode;
+	//std::vector<int>::iterator vecIt;
+	int initIter;
+	int isregist = 0;
 	//nodeSearch
 	BoundNode* searchNode;
 	
 	while (!treeStructure->treeTraverse->empty()){
 
-		searchNode = &(treeStructure->treeTraverse->top());
+		searchNode = new BoundNode(treeStructure->treeTraverse->top());
 		
 		//if this node is terminal node
 		if (searchNode->nodeLevel == (configure->cityCount)-1){
 			//it's bigger than I have
 			if (searchNode->curDis >= currentGotPath){
 				bestTrip = (*searchNode);
+				printf("Best Trip is changing : %d", bestTrip.curDis);
 			}
 			treeStructure->treeTraverse->pop();
 			delete searchNode;
@@ -84,27 +85,27 @@ int main(){
 
 				// insert node that dosn't include present path 
 				for (genIter = 0; genIter < configure->cityCount; genIter++){
-					vecIt = find(searchNode->treeStack->begin(), searchNode->treeStack->end(),genIter );
-					// if this node use => remove from list 
-					if (vecIt == searchNode->treeStack->end()){
-						//enroll the node
-						tempNode = new BoundNode(cityDistArray,searchNode, genIter,configure->meanValue);
+		
+					isregist = 0;
+					for (initIter = 0; initIter < treeStructure->treeTraverse->size(); initIter++){
+
+						if (searchNode->treeStack->at(initIter) == genIter){
+							isregist = 1;
+							break;
+						}
 					}
-					
-				}
-				
+					if (!isregist){
+						treeStructure->treeTraverse->push(new BoundNode(cityDistArray, searchNode, genIter, configure->meanValue, configure->cityCount));
+					}
+
+					}	
+				}		
 				//dellocation 
 				delete searchNode;
-
-
 			}
 		}
-
-		
-
-	}
-	// after searching print minimum value
-
 	return 0;
+	// after searching print minimum value
 	}
+
 
