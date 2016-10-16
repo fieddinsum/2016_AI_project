@@ -9,11 +9,15 @@ int getEdgeCount(){
 	for (countIter = 1; countIter < CITYMAX; countIter++){
 		edgeCount += countIter;
 	}
-
-
 	return edgeCount;
 }
 
+
+void clear(std::stack<BoundNode> &q)
+{
+	std::stack<BoundNode> empty;
+	std::swap(q, empty);
+}
 
 
 
@@ -28,7 +32,7 @@ int main(){
 	configure->cityCount = configure->readCityDistance(cityDistArray);	
 	
 	//complement data (for searching )
-	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount())-50;
+	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount())+50;
 	configure->transCityData(cityDistArray, configure->cityCount);
 
 	//evaluate
@@ -46,11 +50,11 @@ int main(){
 	// while tree was empty
 	int genIter;
 	int currentGotPath = 0;
-	BoundNode* bestTrip = new BoundNode();
+	BoundNode bestTrip;
 	//std::vector<int>::iterator vecIt;
 	int initIter;
 	int tempIter;
-	int isregist = 0;
+	int isregist[CITYMAX] = { 0, };
 	//nodeSearch
 	BoundNode* searchNode;
 	//insert Node to Tree 
@@ -58,67 +62,64 @@ int main(){
 	stack<BoundNode>* tempStack = new stack<BoundNode>();
 	
 	while (!treeStructure->treeTraverse->empty()){
-
 		searchNode = new BoundNode(treeStructure->treeTraverse->top());
 		
 		//if this node is terminal node
 		if (searchNode->nodeLevel == (configure->cityCount)-1){
 			//it's bigger than I have
-			if (searchNode->curDis >= currentGotPath){
-				bestTrip = new BoundNode(searchNode);
-				currentGotPath = bestTrip->curDis;
-				printf("Best Trip is changing : %d\n", bestTrip->curDis);
+			if (searchNode->curDis > currentGotPath){
+				bestTrip = *searchNode;
+				currentGotPath = bestTrip.curDis;
+				printf("Best Trip is changing : %d\n", bestTrip.curDis);
 			}
 			treeStructure->treeTraverse->pop();
 			delete searchNode;
+		
 
 		}
 
 		// if is middle of tree
 		else  {
-			//if is not promising
-			if (searchNode->promValue <= bestTrip->curDis){
+			//if is not promising			
+			if (searchNode->promValue <= bestTrip.curDis){
 				treeStructure->treeTraverse->pop();
-				delete searchNode;
 			}
 
 
 			//if is promising
 			else{
-				// insert node that dosn't include present path 
-				for (genIter = 0; genIter < configure->cityCount; genIter++){
-		
-					isregist = 0;
-					for (initIter = 0; initIter < searchNode->treeStack->size(); initIter++){
 
-						if (searchNode->treeStack->at(initIter) == genIter){
-							isregist = 1;
-							break;
+				// mark using path 	
+					for (initIter = 0; initIter < searchNode->treeStack->size(); initIter++){
+						isregist[(searchNode->treeStack->at(initIter))] = 1;
+					}
+					for (genIter = 0; genIter < configure->cityCount; genIter++){
+						if (!(isregist[genIter])){
+							tempStack->push(new BoundNode(cityDistArray, searchNode, genIter, configure->meanValue, configure->cityCount));
 						}
 					}
-					if (!isregist){
-						tempStack->push(new BoundNode(cityDistArray, searchNode, genIter, configure->meanValue, configure->cityCount));
+
+					for (int i = 0; i < CITYMAX; i++){
+						isregist[i] = 0;
 					}
 
-					}	
-				}
-
 				// stack pop()
-			printf("pop Level %d :\n", treeStructure->treeTraverse->top().nodeLevel);
 				treeStructure->treeTraverse->pop();
-				for (tempIter = 0; tempIter < tempStack->size(); tempIter++){
-					tempNode = &tempStack->top();
-					treeStructure->treeTraverse->push(tempNode);
+				// stack push()
+				for (;(!tempStack->empty());){
+					treeStructure->treeTraverse->push(tempStack->top());
 					tempStack->pop();
 				}
+			}
 
 				//dellocation 
 				delete searchNode;
 			}
 		}
-	int i ;
-	for (i = 0; i < bestTrip->treeStack->size(); i++){
-		printf("%d ", bestTrip->treeStack->at(i));
+
+	int i = 0; 
+	for (int i = 0; i < bestTrip.treeStack->size(); i++){
+		printf("%d ", bestTrip.treeStack->at(i));
 	}
 	return 0;
 	// after searching print minimum value

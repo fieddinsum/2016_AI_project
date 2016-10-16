@@ -48,9 +48,10 @@ BoundNode::BoundNode(BoundNode* copyNode){
 BoundNode::BoundNode(int** cityDistArray, BoundNode* parent, int nodeIndex, int meanvalue,int citySize){
 	
 	treeStack = new vector<int>(*parent->treeStack);
-	treeStack->push_back(this->nodeIndex);
 
 	this->nodeIndex = nodeIndex;
+	treeStack->push_back(this->nodeIndex);
+
 	this->nodeLevel = parent->nodeLevel + 1;
 
 
