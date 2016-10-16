@@ -24,6 +24,7 @@ void clear(std::stack<BoundNode> &q)
 
 int main(){
 
+	
 	//FILE IOL{
 	OuterComponent* configure = new OuterComponent();
 	int** cityDistArray = configure->makeDisMap();
@@ -32,7 +33,7 @@ int main(){
 	configure->cityCount = configure->readCityDistance(cityDistArray);	
 	
 	//complement data (for searching )
-	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount())+50;
+	configure->meanValue = (configure->maxDist+1) - (int)(configure->sumDist / getEdgeCount());
 	configure->transCityData(cityDistArray, configure->cityCount);
 
 	//evaluate
@@ -44,9 +45,7 @@ int main(){
 		
 	//construct Tree & add firstNode to Tree
 	BranchTree* treeStructure = new BranchTree();
-	BoundNode* startNode = new BoundNode(hoguIndex);
-	treeStructure->startSetting(startNode, configure->cityCount, configure->meanValue);
-
+	
 	// while tree was empty
 	int genIter;
 	int currentGotPath = 0;
@@ -60,7 +59,16 @@ int main(){
 	//insert Node to Tree 
 	BoundNode* tempNode;
 	stack<BoundNode>* tempStack = new stack<BoundNode>();
-	
+
+	//select  1/500 value
+	int loadselection;
+
+	BoundNode* startNode = new BoundNode(hoguIndex);
+
+	treeStructure->startSetting(startNode, configure->cityCount, configure->meanValue);
+
+
+
 	while (!treeStructure->treeTraverse->empty()){
 		searchNode = new BoundNode(treeStructure->treeTraverse->top());
 		
@@ -90,8 +98,9 @@ int main(){
 			else{
 
 				// mark using path 	
-					for (initIter = 0; initIter < searchNode->treeStack->size(); initIter++){
-						isregist[(searchNode->treeStack->at(initIter))] = 1;
+				for (initIter = 0; searchNode->treeStack[initIter] != -1; initIter++){
+						isregist[(searchNode->treeStack[initIter])] = 1;
+						
 					}
 					for (genIter = 0; genIter < configure->cityCount; genIter++){
 						if (!(isregist[genIter])){
@@ -118,8 +127,8 @@ int main(){
 		}
 
 	int i = 0; 
-	for (int i = 0; i < bestTrip.treeStack->size(); i++){
-		printf("%d ", bestTrip.treeStack->at(i));
+	for (int i = 0; i < bestTrip.treeStack[i]!=-1; i++){
+		printf("%d ", bestTrip.treeStack[i]);
 	}
 	return 0;
 	// after searching print minimum value

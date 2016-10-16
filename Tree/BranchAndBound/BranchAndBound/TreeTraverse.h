@@ -5,6 +5,8 @@
 #include<stack>
 #include<vector>
 
+static const int LINESIZE = 4000;
+static const int CITYMAX = 601;
 
 using namespace std;
 
@@ -24,7 +26,7 @@ public:
 	int curDis;
 	int promValue;
 
-	vector<int>* treeStack;
+	int treeStack[CITYMAX];
 	// 'A~D'
 	char nodeKind;
 
